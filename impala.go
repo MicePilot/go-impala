@@ -16,6 +16,7 @@ type Options struct {
 	Port     string
 	Username string
 	Password string
+	Database string
 
 	UseLDAP      bool
 	UseTLS       bool
@@ -30,5 +31,5 @@ type Options struct {
 
 var (
 	// DefaultOptions for impala driver
-	DefaultOptions = Options{BatchSize: 1024, BufferSize: 4096, Port: "21050", LogOut: ioutil.Discard}
+	DefaultOptions = Options{BatchSize: 1024, BufferSize: 4096, Port: "21050", LogOut: ioutil.Discard, Database: "default"}
 )

@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/MicePilot/go-impala/hive"
+	"github.com/MicePilot/go-impala/sasl"
 	"github.com/apache/thrift/lib/go/thrift"
-	"github.com/bippio/go-impala/hive"
-	"github.com/bippio/go-impala/sasl"
 )
 
 var (
@@ -224,9 +224,10 @@ func connect(opts *Options) (*Conn, error) {
 
 	tclient := thrift.NewTStandardClient(protocol, protocol)
 	client := hive.NewClient(tclient, logger, &hive.Options{
-		MaxRows:  int64(opts.BatchSize),
-		MemLimit: opts.MemoryLimit,
+		MaxRows:      int64(opts.BatchSize),
+		MemLimit:     opts.MemoryLimit,
 		QueryTimeout: opts.QueryTimeout,
+		Database:     opts.Database,
 	})
 
 	return &Conn{client: client, t: transport, log: logger}, nil

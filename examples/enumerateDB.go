@@ -7,24 +7,25 @@ import (
 	"database/sql"
 	"log"
 
-	impala "github.com/bippio/go-impala"
+	impala "github.com/MicePilot/go-impala"
 )
 
 func main() {
 
 	opts := impala.DefaultOptions
 
-	opts.Host = "<impala host>"
+	opts.Host = ""
 	opts.Port = "21050"
 
 	// enable LDAP authentication:
-	opts.UseLDAP = true
+	opts.UseLDAP = false
 	opts.Username = "<ldap username>"
 	opts.Password = "<ldap password>"
-
 	// enable TLS
-	opts.UseTLS = true
+	opts.UseTLS = false
 	opts.CACertPath = "/path/to/cacert"
+
+	opts.Database = ""
 
 	connector := impala.NewConnector(&opts)
 	db := sql.OpenDB(connector)
@@ -32,7 +33,25 @@ func main() {
 
 	ctx := context.Background()
 
-	rows, err := db.QueryContext(ctx, "SHOW DATABASES")
+	rows, err := db.QueryContext(ctx, "SHOW TABLES")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var name string
+	var tables []string
+	for rows.Next() {
+		if err := rows.Scan(&name); err != nil {
+			log.Fatal(err)
+		}
+		tables = append(tables, name)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("All table names of the current connected database", tables)
+
+	rows, err = db.QueryContext(ctx, "SHOW DATABASES")
 	if err != nil {
 		log.Fatal(err)
 	}
